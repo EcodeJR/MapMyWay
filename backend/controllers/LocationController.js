@@ -44,10 +44,42 @@ exports.getLocations = async (req, res) => {
 // Update a location (admin only)
 exports.updateLocation = async (req, res) => {
   try {
-    const updated = await Location.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
+    // Handle file upload if present
+    if (req.file) {
+      req.body.imageUrl = `${req.protocol}://${req.get('host')}/api/uploads/file/${req.file.filename}`;
+    }
+
+    // Parse coordinates from form data
+    if (req.body['coordinates[lat]'] && req.body['coordinates[lng]']) {
+      req.body.coordinates = {
+        lat: parseFloat(req.body['coordinates[lat]']),
+        lng: parseFloat(req.body['coordinates[lng]'])
+      };
+      // Remove the original form data fields
+      delete req.body['coordinates[lat]'];
+      delete req.body['coordinates[lng]'];
+    }
+
+    const updated = await Location.findByIdAndUpdate(
+      req.params.id, 
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ msg: 'Location not found' });
+    }
+
+    res.json({
+      success: true,
+      data: updated
+    });
   } catch (err) {
-    res.status(400).json({ msg: err.message });
+    console.error('Update error:', err);
+    res.status(400).json({ 
+      success: false,
+      msg: err.message || 'Failed to update location'
+    });
   }
 };
 

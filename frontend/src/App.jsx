@@ -6,6 +6,8 @@ import MapView from './components/MapView';
 import LocationList from './components/LocationList';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import HomePage from './components/HomePage';
+import NotFound from './components/NotFound';
 import AddLocation from './components/AddLocation';
 import EditLocation from './components/EditLocation';
 import { TbMenu2 } from "react-icons/tb";
@@ -67,7 +69,7 @@ const App = () => {
 
             {/* Desktop menu */}
             <div className="hidden md:flex md:items-center md:space-x-6">
-              <Link to="/" className="text-white hover:text-gray-300">Map</Link>
+              <Link to="/map" className="text-white hover:text-gray-300">Map</Link>
               <Link to="/locations" className="text-white hover:text-gray-300">Locations</Link>
               <Link to="/add-location" className="text-white hover:text-gray-300">Add Location</Link>
             </div>
@@ -112,7 +114,7 @@ const App = () => {
         {menuOpen && (
           <div className="md:hidden bg-gray-700 px-2 pt-2 pb-3 space-y-1">
             <Link
-              to="/"
+              to="/map"
               onClick={() => setMenuOpen(false)}
               className="block px-3 py-2 rounded text-white hover:bg-gray-600"
             >
@@ -165,14 +167,16 @@ const App = () => {
         )}
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container  mx-auto px-4 py-8">
         <Routes>
-          <Route path="/" element={<MapView />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/map" element={<MapView />} />
           <Route path="/locations" element={<LocationList />} />
           <Route path="/add-location" element={<AddLocation />} />
           <Route path="/locations/edit/:id" element={<EditLocation />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </>

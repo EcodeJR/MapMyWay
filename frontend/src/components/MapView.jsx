@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 import api from '../services/api';
+import { useLocation } from 'react-router-dom';
+
 
 const containerStyle = {
   width: '100%',
@@ -37,6 +39,7 @@ const getGeolocationErrorMessage = (code) => {
 };
 
 const MapView = () => {
+  const location = useLocation();
   // Memoize libraries; adding navigation library
   const libraries = useMemo(() => ['places'], []);
   
@@ -74,6 +77,36 @@ const MapView = () => {
       setMapError(`Error loading Google Maps: ${error.message || 'Unknown error'}`);
     }
   });
+
+  // Use effect to handle location state from navigation
+
+  useEffect(() => {
+    if (location.state?.selectedLocationId && locations.length > 0) {
+      setIsLoadingLocation(true);
+      
+      try {
+        const selectedLoc = locations.find(loc => loc._id === location.state.selectedLocationId);
+        if (selectedLoc) {
+          setSelectedLocation(selectedLoc);
+          
+          if (mapRef) {
+            mapRef.panTo({
+              lat: selectedLoc.coordinates.lat,
+              lng: selectedLoc.coordinates.lng
+            });
+            mapRef.setZoom(15);
+          }
+        }
+      } catch (error) {
+        console.error("Error centering map:", error);
+        setLocationError("Failed to center map on selected location");
+      } finally {
+        setIsLoadingLocation(false);
+      }
+    }
+  }, [location.state, locations, mapRef]);
+
+
 
   // Handle Google Maps loading error
   useEffect(() => {
@@ -457,6 +490,7 @@ const MapView = () => {
   const onUnmount = () => {
     setMapRef(null);
   };
+
 
   // Display loading/error states
   if (mapError) {

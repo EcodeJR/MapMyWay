@@ -3,22 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { RiFileEditFill } from "react-icons/ri";
+import { RiDeleteBin5Line, RiFileEditFill, RiSearchLine } from 'react-icons/ri';
 
 const LocationList = () => {
   const [locations, setLocations] = useState([]);
   const [query, setQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // loading state
   const role = localStorage.getItem('role');
   const navigate = useNavigate();
 
   useEffect(() => {
+    setIsLoading(true);
     api.get(`http://localhost:5000/api/locations/GetLocation?q=${query}`)
-      .then(res => {
-        setLocations(res.data),
-        console.log(res.data)
-      } )
-      .catch(err => console.error(err));
+      .then(res => setLocations(res.data))
+      .catch(err => console.error(err))
+      .finally(() => setIsLoading(false));
   }, [query]);
 
   const handleDelete = async id => {
@@ -27,151 +26,99 @@ const LocationList = () => {
       await api.delete(`/locations/${id}`, {
         headers: { 'x-auth-token': token }
       });
-      setLocations(locations.filter(l => l._id !== id));
+      setLocations(prev => prev.filter(l => l._id !== id));
     } catch (err) {
       console.error('Delete failed', err);
     }
   };
-  
+
   const handleEdit = loc => {
-    // e.g. navigate to an EditLocation form with `loc` data
     navigate(`/locations/edit/${loc._id}`, { state: { loc } });
   };
 
-  
   return (
-    <div className="my-8">
-      <input
-        type="text"
-        placeholder="Search locations..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="w-full p-2 mb-4 border border-gray-300 rounded"
-      />
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {locations.map(loc => (
-                // Inside your .map over locations:
-                <li key={loc._id} className="bg-white rounded shadow p-4 relative">
-                  {loc.imageUrl && (
-                    <img src={loc.imageUrl} alt={loc.name} className="w-full h-40 object-cover rounded" />
-                  )}
-                  <h3 className="font-bold mt-2">{loc.name}</h3>
-                  <p className="text-sm">{loc.description}</p>
-
-                  {role === 'admin' && (
-                    <div className="absolute top-2 right-2 flex space-x-2">
-                      <button
-                      title='Edit'
-                        onClick={() => handleEdit(loc)}
-                        className="px-2 py-1 bg-yellow-500 text-white rounded"
-                      >
-                        <RiFileEditFill />
-                      </button>
-                      <button
-                      title="Delete"
-                        onClick={() => handleDelete(loc._id)}
-                        className="px-2 py-1 bg-red-600 text-white rounded"
-                      >
-                        <RiDeleteBin5Line />
-                      </button>
-                    </div>
-                  )}
-                </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default LocationList; 
-{/*
-
-    // frontend/src/components/LocationList.jsx
-import React, { useState, useEffect } from 'react';
-import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-import api from '../services/api';
-
-const LocationList = () => {
-  const [locations, setLocations] = useState([]);
-  const [query, setQuery] = useState('');
-  const [searchBox, setSearchBox] = useState(null);
-  
-  // Load Google Maps API
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: ['places']
-  });
-
-  useEffect(() => {
-    api.get(`/locations?q=${query}`)
-      .then(res => setLocations(res.data))
-      .catch(err => console.error(err));
-  }, [query]);
-
-  const onPlaceChanged = () => {
-    if (searchBox) {
-      const place = searchBox.getPlace();
-      if (place.name) {
-        setQuery(place.name);
-        
-        if (place.geometry && place.geometry.location) {
-          const position = {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng()
-          };
-          console.log(`Selected coordinates: ${position.lat}, ${position.lng}`);
-          
-          // You could do additional things with the coordinates here
-          // For example, filter results by proximity or save the location
-        }
-      }
-    }
-  };
-
-  return (
-    <div className="my-8">
-      {isLoaded ? (
-        <Autocomplete
-          onLoad={box => setSearchBox(box)}
-          onPlaceChanged={onPlaceChanged}
-        >
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
+      {/* Search Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Explore Locations</h1>
+        <div className="relative">
+          <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search locations..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
+            onChange={e => setQuery(e.target.value)}
+            className="w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           />
-        </Autocomplete>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : locations.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-gray-500 text-lg">No locations found</p>
+        </div>
       ) : (
-        <input
-          type="text"
-          placeholder="Loading search..."
-          disabled
-          className="w-full p-2 mb-4 border border-gray-300 rounded"
-        />
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {locations.map(loc => (
+            <li key={loc._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48">
+                {loc.imageUrl ? (
+                  <img
+                    src={loc.imageUrl}
+                    alt={loc.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-400">No image</span>
+                  </div>
+                )}
+                {role === 'admin' && (
+                  <div className="absolute top-2 right-2 flex space-x-2">
+                    <button
+                      title="Edit"
+                      onClick={() => handleEdit(loc)}
+                      className="p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition-colors duration-200 shadow-lg"
+                    >
+                      <RiFileEditFill className="text-lg" />
+                    </button>
+                    <button
+                      title="Delete"
+                      onClick={() => handleDelete(loc._id)}
+                      className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors duration-200 shadow-lg"
+                    >
+                      <RiDeleteBin5Line className="text-lg" />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-xl mb-2 text-gray-800">{loc.name}</h3>
+                <p className="text-gray-600 line-clamp-2">{loc.description}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <button
+                      onClick={() => {
+                        // Pass the full location object as state
+                        navigate(`/map`, {
+                          state: { selectedLocationId: loc._id }
+                        });
+                      }}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm font-medium flex items-center gap-2"
+                    >
+                      View on map <span className="text-lg">→</span>
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
-      
-      <ul className="space-y-4">
-        {locations.map(loc => (
-          <li key={loc._id} className="p-4 bg-white rounded shadow">
-            <h3 className="font-bold">{loc.name}</h3>
-            <p>{loc.description}</p>
-            {loc.imageUrl && (
-              <img src={loc.imageUrl} alt={loc.name} className="mt-2 rounded" />
-            )}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
 
 export default LocationList;
-
-------------------------------------------------------------------
-
-
-*/}
-

@@ -17,7 +17,13 @@ router.get('/GetLocation', getLocations);
 // Admin-only routes: create, update, delete locations
 // Here we use multer-gridfs-storage to handle image uploads
 router.post('/AddLocation', verifyToken, checkAdmin, upload.single('image'), createLocation);
-router.put('/:id', verifyToken, checkAdmin, updateLocation);
+// Update route should include upload middleware
+router.put('/:id', 
+  verifyToken, 
+  checkAdmin, 
+  upload.single('image'), // Add this middleware
+  updateLocation
+);
 router.delete('/:id', verifyToken, checkAdmin, deleteLocation);
 
 module.exports = router;
