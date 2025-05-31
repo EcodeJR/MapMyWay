@@ -15,22 +15,34 @@ const Signup = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const onChange = e =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+      // Clear adminCode if role is switched to user
+      ...(name === 'role' && value === 'user' ? { adminCode: '' } : {})
+    }));
+  };
 
   const onSubmit = async e => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const res = await api.post('/auth/signup', formData);
-      setMessage(res.data.msg);
+      setMessage(res.data.msg || 'Registration successful!');
       navigate('/login');
     } catch (err) {
-      setMessage(err.response.data.msg || 'Registration failed');
+      console.error('Signup error:', err);
+      setMessage(
+        err.response?.data?.msg || 
+        err.message || 
+        'Registration failed. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
-  };
+};
 
   // Check if form is valid for submission
   const isFormValid = () => {
