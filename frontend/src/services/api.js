@@ -4,7 +4,7 @@ import axios from 'axios';
 // Create axios instance with default config
 const api = axios.create({
   baseURL: import.meta.env.VITE_NODE_ENV === 'production' 
-    ? '/api'  // Production: relative path for Vercel
+    ? 'https://map-my-way-backend.vercel.app/api'  // Production: relative path for Vercel
     : 'http://localhost:5000/api', // Development: your local backend
   timeout: 10000,
   headers: {
