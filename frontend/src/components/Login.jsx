@@ -19,7 +19,7 @@ const Login = ({ setUser }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signin', formData);
+      const res = await axios.post('/auth/signin', formData);
       // Calculate the expiration time (3 days in milliseconds)
       const expiresAt = Date.now() + 3 * 24 * 60 * 60 * 1000;
 

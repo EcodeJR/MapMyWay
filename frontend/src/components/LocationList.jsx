@@ -14,7 +14,7 @@ const LocationList = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    api.get(`http://localhost:5000/api/locations/GetLocation?q=${query}`)
+    api.get(`/locations/GetLocation?q=${query}`)
       .then(res => setLocations(res.data))
       .catch(err => console.error(err))
       .finally(() => setIsLoading(false));

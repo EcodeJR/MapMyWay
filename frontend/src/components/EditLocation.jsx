@@ -88,7 +88,7 @@ const onSubmit = async e => {
 
     const token = localStorage.getItem('token');
     const response = await axios.put(
-      `http://localhost:5000/api/locations/${id}`,
+      `/locations/${id}`,
       data,
       {
         headers: {

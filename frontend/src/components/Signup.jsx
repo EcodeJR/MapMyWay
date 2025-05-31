@@ -22,7 +22,7 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', formData);
+      const res = await axios.post('/auth/signup', formData);
       setMessage(res.data.msg);
       navigate('/login');
     } catch (err) {

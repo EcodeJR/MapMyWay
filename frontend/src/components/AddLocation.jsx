@@ -56,7 +56,7 @@ const AddLocation = () => {
       }
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5000/api/locations/AddLocation',
+        '/locations/AddLocation',
         data,
         {
           headers: {

@@ -14,10 +14,14 @@ connectDB();
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
-  origin: true,  // Allow same origin
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? true  // Same origin in production
+    : ['https://map-my-way.vercel.app', 'http://localhost:5173'], // Dev origins
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 app.use('/uploads', express.static('uploads'));
 
 // Mount routes
