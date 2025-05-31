@@ -9,17 +9,14 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/dist/assets/$1"
+      "source": "/assets/:path*",
+      "destination": "/dist/assets/:path*"
     },
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/.*",
-      "dest": "/dist/index.html"
+      "source": "/:path*",
+      "destination": "/dist/index.html"
     }
   ],
   "cleanUrls": true,
