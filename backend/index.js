@@ -14,7 +14,10 @@ connectDB();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: true,  // Allow same origin
+  credentials: true
+}));
 app.use('/uploads', express.static('uploads'));
 
 // Mount routes
