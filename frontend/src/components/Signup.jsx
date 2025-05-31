@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { RiUserAddLine, RiMailLine, RiLockPasswordLine, RiShieldUserLine, RiKeyLine } from 'react-icons/ri';
+import api from '../services/api';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post('/auth/signup', formData);
+      const res = await api.post('/auth/signup', formData);
       setMessage(res.data.msg);
       navigate('/login');
     } catch (err) {

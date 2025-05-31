@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { RiMailLine, RiLockPasswordLine, RiLoginCircleLine } from 'react-icons/ri';
+import api from '../services/api';
 
 const Login = ({ setUser }) => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Login = ({ setUser }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post('/auth/signin', formData);
+      const res = await api.post('/auth/signin', formData);
       // Calculate the expiration time (3 days in milliseconds)
       const expiresAt = Date.now() + 3 * 24 * 60 * 60 * 1000;
 
