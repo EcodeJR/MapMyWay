@@ -15,7 +15,7 @@ connection.asPromise()
     gfsBucket = new mongoose.mongo.GridFSBucket(connection.db, {
       bucketName: 'uploads'
     });
-    console.log('GridFS connection established');
+    // console.log('GridFS connection established');
   })
   .catch(err => {
     console.error('GridFS connection error:', err);
@@ -29,7 +29,7 @@ router.get('/file/:filename', (req, res) => {
   }
 
   const filename = req.params.filename;
-  console.log(`Retrieving file: ${filename}`);
+  // console.log(`Retrieving file: ${filename}`);
 
   // Use promises instead of callbacks for better error handling
   gfsBucket.find({ filename: filename }).toArray()
@@ -39,7 +39,7 @@ router.get('/file/:filename', (req, res) => {
         return res.status(404).json({ message: 'File not found' });
       }
       
-      console.log('File found:', files[0]);
+      // console.log('File found:', files[0]);
       res.set('Content-Type', files[0].contentType || 'application/octet-stream');
       
       const downloadStream = gfsBucket.openDownloadStreamByName(filename);

@@ -136,7 +136,7 @@ const MapView = () => {
           if (isValidCoordinates(lat, lng)) {
             const userPos = { lat, lng };
             setUserLocation(userPos);
-            console.log("User location set:", userPos);
+            // console.log("User location set:", userPos);
 
             if (mapRef) {
               try {
@@ -167,7 +167,7 @@ const MapView = () => {
   useEffect(() => {
     if (mapRef && userLocation) {
       try {
-        console.log("Centering map on user's location:", userLocation);
+        // console.log("Centering map on user's location:", userLocation);
         mapRef.panTo(userLocation);
         mapRef.setZoom(14);
       } catch (error) {
@@ -183,7 +183,7 @@ const MapView = () => {
     api.get('/locations/GetLocation')
       .then(res => {
         if (res.data && Array.isArray(res.data)) {
-          console.log("Locations loaded:", res.data);
+          // console.log("Locations loaded:", res.data);
           setLocations(res.data);
           
           // Fit map bounds if mapRef is available
@@ -281,7 +281,7 @@ const MapView = () => {
     speechSynthesis.current.speak(utterance);
     setLastSpokenInstruction(text);
     
-    console.log("Speaking:", text);
+    // console.log("Speaking:", text);
   };
 
   // Parse HTML instructions to plain text

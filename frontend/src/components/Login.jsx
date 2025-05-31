@@ -26,7 +26,7 @@ const Login = ({ setUser }) => {
       // Create an object with the token and its expiration time
         const token = res.data.token
         const role = res.data.role
-        console.log(res.data);
+        // console.log(res.data);
 
       // Store it as a JSON string in localStorage
       localStorage.setItem('token', token);

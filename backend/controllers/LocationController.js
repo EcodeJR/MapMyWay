@@ -37,7 +37,7 @@ exports.getLocations = async (req, res) => {
     res.json(locations);
   } catch (err) {
     res.status(500).json({ msg: err.message });
-    console.log(err);
+    // console.log(err);
   }
 };
 
