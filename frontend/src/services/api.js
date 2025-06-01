@@ -21,8 +21,14 @@ api.getImageUrl = (imageUrl) => {
     new URL(imageUrl);
     return imageUrl;
   } catch {
-    // If it's a relative path, prepend the API base URL
-    return `${api.defaults.baseURL}/uploads/file/${imageUrl.split('/').pop()}`;
+    // If it's a relative path, construct the full URL
+    const baseUrl = import.meta.env.VITE_NODE_ENV === 'production'
+      ? 'https://map-my-way-backend.vercel.app'
+      : 'http://localhost:5000';
+    
+    // Handle both formats of image paths
+    const imagePath = imageUrl.startsWith('/') ? imageUrl : `/api/uploads/file/${imageUrl}`;
+    return `${baseUrl}${imagePath}`;
   }
 };
 
