@@ -13,7 +13,6 @@ exports.verifyToken = (req, res, next) => {
     req.user = decoded.user;
     next();
   } catch (err) {
-    console.log(JWT_SECRET);
     console.error(err);
     res.status(401).json({ msg: 'Token is not valid' });
   }
