@@ -1,16 +1,30 @@
-// frontend/src/services/api.js
 import axios from 'axios';
 
-// Create axios instance with default config
+const BASE_URL = import.meta.env.VITE_NODE_ENV === 'production'
+  ? 'https://map-my-way-backend.vercel.app'  // Production backend URL
+  : 'http://localhost:5000'; // Development backend URL
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_NODE_ENV === 'production' 
-    ? 'https://map-my-way-backend.vercel.app/api'  // Production: relative path for Vercel
-    : 'http://localhost:5000/api', // Development: your local backend
+  baseURL: `${BASE_URL}/api`,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   }
 });
+
+// Helper method to get complete image URL
+api.getImageUrl = (imageUrl) => {
+  if (!imageUrl) return null;
+  
+  try {
+    // If it's already a full URL, return it
+    new URL(imageUrl);
+    return imageUrl;
+  } catch {
+    // If it's a relative path, prepend the API base URL
+    return `${api.defaults.baseURL}/uploads/file/${imageUrl.split('/').pop()}`;
+  }
+};
 
 // Add request interceptor to add auth token if available
 api.interceptors.request.use(

@@ -55,6 +55,9 @@ const MapView = () => {
   const [locationsError, setLocationsError] = useState(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState(null);
+    // Add state for image loading
+  const [imageLoadError, setImageLoadError] = useState({});
+
   
   // Voice navigation states
   const [isNavigating, setIsNavigating] = useState(false);
@@ -608,7 +611,7 @@ const MapView = () => {
             <div className="max-w-xs">
               <h3 className="font-bold text-lg">{selectedLocation.name}</h3>
               <p className="text-sm my-1">{selectedLocation.description}</p>
-              {selectedLocation.imageUrl && (
+              {/* {selectedLocation.imageUrl && (
                 <img 
                   src={selectedLocation.imageUrl} 
                   alt={selectedLocation.name} 
@@ -619,7 +622,25 @@ const MapView = () => {
                     e.target.src = "https://via.placeholder.com/200x150?text=Image+Not+Available";
                   }}
                 />
-              )}
+              )} */}
+              {selectedLocation.imageUrl && !imageLoadError[selectedLocation._id] ? (
+              <img 
+                src={api.getImageUrl(selectedLocation.imageUrl)}
+                alt={selectedLocation.name} 
+                className="mt-2 rounded w-full h-32 object-cover"
+                onError={(e) => {
+                  console.error("Error loading image:", e);
+                  setImageLoadError(prev => ({
+                    ...prev,
+                    [selectedLocation._id]: true
+                  }));
+                }}
+              />
+            ) : (
+              <div className="mt-2 w-full h-32 bg-gray-200 rounded flex items-center justify-center">
+                <span className="text-gray-500">No image available</span>
+              </div>
+            )}
               
               {userLocation && !directions && (
                 <button

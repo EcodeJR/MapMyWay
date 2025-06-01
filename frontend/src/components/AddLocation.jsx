@@ -1,6 +1,6 @@
 // frontend/src/components/AddLocation.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { RiMapPinLine, RiImageAddLine, RiLoader4Line } from 'react-icons/ri';
 
@@ -55,7 +55,7 @@ const AddLocation = () => {
         data.append('image', imageFile);
       }
       const token = localStorage.getItem('token');
-      await axios.post(
+      await api.post(
         '/locations/AddLocation',
         data,
         {

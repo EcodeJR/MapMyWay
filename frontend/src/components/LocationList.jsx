@@ -68,9 +68,14 @@ const LocationList = () => {
               <div className="relative h-48">
                 {loc.imageUrl ? (
                   <img
-                    src={loc.imageUrl}
+                    src={api.getImageUrl(loc.imageUrl)}
                     alt={loc.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error('Image load error:', e);
+                      e.target.onerror = null; // Prevent infinite loop
+                      e.target.src = '/placeholder.jpg'; // Add a placeholder image
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center">

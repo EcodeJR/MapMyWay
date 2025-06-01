@@ -1,7 +1,7 @@
 // frontend/src/components/EditLocation.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { RiMapPinLine, RiImageAddLine, RiSaveLine, RiLoader4Line } from 'react-icons/ri';
 
 const EditLocation = () => {
@@ -31,7 +31,7 @@ const EditLocation = () => {
         lng: initial.coordinates.lng,
       });
     } else {
-      axios.get(`http://localhost:5000/api/locations/${id}`)
+      api.get(`http://localhost:5000/api/locations/${id}`)
         .then(res => {
           const loc = res.data;
           setFormData({
@@ -87,7 +87,7 @@ const onSubmit = async e => {
     }
 
     const token = localStorage.getItem('token');
-    const response = await axios.put(
+    const response = await api.put(
       `/locations/${id}`,
       data,
       {

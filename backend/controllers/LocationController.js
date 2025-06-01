@@ -6,13 +6,11 @@ const Location = require('../models/Location');
 // Updated controller function for createLocation
 exports.createLocation = async (req, res) => {
   try {
-    // Check if a file was uploaded
     if (req.file) {
-      // Construct a URL to access the image from GridFS
-      req.body.imageUrl = `${req.protocol}://${req.get('host')}/api/uploads/file/${req.file.filename}`;
+      // Use a relative URL path instead of absolute
+      req.body.imageUrl = `/api/uploads/file/${req.file.filename}`;
     }
     
-    // Create the new location with the updated body
     const newLocation = await Location.create(req.body);
     
     res.status(201).json({
